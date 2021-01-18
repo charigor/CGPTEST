@@ -17,3 +17,9 @@
         <p>Clients</p>
     </a>
 </li>
+<li class="nav-item">
+    <a href="{{ route('apiTest') }}" class="nav-link {{ Route::is('apiTest') ? 'active' : '' }}">
+        <i class="nav-icon fas fa-user-friends"></i>
+        <p>Api Test</p>
+    </a>
+</li>

@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Company;
 use Debugbar;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Client;
 
 class CompaniesController extends Controller
 {
     public $pageCount = 20;
+    public $pageLink = 2;
     /**
      * Display a listing of the resource.
      *
@@ -18,11 +20,10 @@ class CompaniesController extends Controller
 
     public function index()
     {
-        $companies = Company::paginate($this->pageCount);
+        $companies = Company::with('clients')
+                            ->paginate($this->pageCount)
+                            ->onEachSide($this->pageLink);
         return view('companies',compact('companies'));
-    }
-    public function show() {
-
     }
 
     /**
@@ -41,11 +42,16 @@ class CompaniesController extends Controller
                 'errors' => $validation->messages()
             ], 422);
         }
+
         $company = new Company;
         $company->name = request('name');
         $company->description = request('description');
+        $company->clients()->sync(request('value'));
         $company->save();
-        $companies = Company::paginate($this->pageCount);
+
+        $companies = Company::paginate($this->pageCount)
+                            ->onEachSide($this->pageLink)
+                            ->withPath('/companies');
         return [
             'message' => 'Company was created!',
             'companies' => $companies
@@ -78,7 +84,7 @@ class CompaniesController extends Controller
         $company->save();
         return [
             'message' => 'Company was updated!',
-            'company' => $company
+            'company' => $company->load('clients')
         ];
     }
 
@@ -90,11 +96,17 @@ class CompaniesController extends Controller
      */
     public function destroy($id)
     {
-        Company::findOrFail($id)->delete();
+        $company = Company::where('id',$id)->first();
+        if($company) {
+            $company->clients()->detach();
+            $company->delete();
+        }
 
         return [
             'message' => 'Company was deleted!',
-            'companies' => Company::paginate($this->pageCount)->withPath('/companies')
+            'companies' => Company::paginate($this->pageCount)
+                                  ->onEachSide($this->pageLink)
+                                  ->withPath('/companies')
         ];
     }
 }

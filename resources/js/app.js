@@ -6,8 +6,14 @@
 
 require('./bootstrap');
 let token = window.app.csrfToken;
+
 window.Vue = require('vue').default;
+
+const Swal = require('sweetalert2')
+
 Vue.component('Pagination', require('./components/Pagination.vue').default);
+
+// Vue.component('multiselect', Multiselect)
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -25,7 +31,23 @@ Vue.component('Pagination', require('./components/Pagination.vue').default);
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+if( window.app.auth && localStorage.getItem("authToken") == null){
 
-// const app = new Vue({
-//     el: '#app',
-// });
+   axios.post(
+        `http://127.0.0.1:8000/api/login`,
+        window.app.auth
+
+    )
+    .then(response => {
+        if(localStorage.getItem("authToken") == null){
+            localStorage.setItem('authToken',response.data)
+        }
+    }).catch( error => {
+       localStorage.removeItem('authToken')
+    })
+}
+import common  from "./common";
+
+Vue.mixin(common)
+
+

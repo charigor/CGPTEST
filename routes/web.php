@@ -18,14 +18,13 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Auth::routes();
-
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/apiTest', [App\Http\Controllers\ApiTestController::class, 'index'])->name('apiTest');
 Route::resource('companies', App\Http\Controllers\CompaniesController::class)->except([
     'create', 'show', 'edit'
 ]);;
 Route::resource('clients', App\Http\Controllers\ClientsController::class);
 
 
-Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+

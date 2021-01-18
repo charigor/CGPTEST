@@ -10,6 +10,7 @@
           crossorigin="anonymous"/>
 
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/vue-multiselect@2.1.0/dist/vue-multiselect.min.css">
 
     @yield('third_party_stylesheets')
 
@@ -30,16 +31,16 @@
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown user-menu">
                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
-{{--                    <img src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=150"--}}
-{{--                         class="user-image img-circle elevation-2" alt="User Image">--}}
+                    <img src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=150"
+                         class="user-image img-circle elevation-2" alt="User Image">
                     <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                     <!-- User image -->
                     <li class="user-header bg-primary">
-{{--                        <img src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=150"--}}
-{{--                             class="img-circle elevation-2"--}}
-{{--                             alt="User Image">--}}
+                        <img src="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=150"
+                             class="img-circle elevation-2"
+                             alt="User Image">
                         <p>
                             {{ Auth::user()->name }}
                             <small>Member since {{ Auth::user()->created_at->format('M. Y') }}</small>
@@ -83,7 +84,9 @@
 <script>
     window.app = {!! json_encode([
         'csrfToken' => csrf_token(),
+        'auth'      => auth()->user()
     ]) !!}
+
 </script>
 @stack('prejs')
 @stack('beforeJs')

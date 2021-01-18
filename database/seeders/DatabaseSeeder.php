@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Seeders;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,8 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $companies =  \App\Models\Company::factory(10000)->create();
-        $clients = \App\Models\Client::factory(10000)->create();
-        $companies->first()->clients()->sync($clients);
+        \App\Models\Company::factory(10001)->create()->each(function($company) {
+            $clients = \App\Models\Client::factory()->create();
+            $company->clients()->sync($clients);
+        });
+
     }
 }

@@ -10,7 +10,7 @@
                 </button>
             </div>
         </div>
-            <div class="row" v-if="companies">
+            <div class="row" v-if="companies" v-cloak>
                 <div class="col-md-12">
                     <div class="card">
 
@@ -20,7 +20,6 @@
 
                             <table class="table table-bordered">
                                 <thead>
-
                                 <tr>
                                     <th style="width: 10px">#</th>
                                     <th>name</th>
@@ -68,13 +67,40 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="companies-name">Companies name</label>
-                                    <input type="text" v-model="form.name" class="form-control" name="companies" id="companies-name">
+                                    <input type="text" v-model="form.name" :class="{'is-invalid': errors.get('name')}" class="form-control" name="companies" id="companies-name">
+                                    <div class="invalide-feedback red">
+                                        @{{errors.get('name')}}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="companies-description">Companies description</label>
-                                    <textarea class="form-control" v-model="form.description" name="companies-description" cols="30"
+                                    <textarea class="form-control" :class="{'is-invalid': errors.get('description')}" v-model="form.description" name="companies-description" cols="30"
                                               id="companies-description"
-                                              rows="10"></textarea>
+                                              rows="5"></textarea>
+                                    <div class="invalide-feedback red">
+                                        @{{errors.get('description')}}
+                                    </div>
+                                </div>
+                                <div class="form-group" v-if="edit">
+                                    <div>
+                                        <label class="typo__label">Clients of company</label>
+                                        <multiselect
+                                            :class="{'show-state': show}"
+                                            v-model="value"
+                                            placeholder="Search or client a tag"
+                                            label="name"
+                                            track-by="id"
+                                            :options="options"
+                                            :multiple="true"
+                                            :taggable="true"
+                                            open-direction="top"
+                                            @select="onSelect"
+                                            @close="onTouch"
+                                            @tag="addTag">
+                                        </multiselect>
+                                        <pagination-vue v-if="options.length" @get-data="getData"
+                                                        :data="paginator" :show="show"></pagination-vue>
+                                    </div>
                                 </div>
                             </div>
                         </form>

@@ -12,3 +12,25 @@
 .modal.fade.show {
     display: block;
 }
+.show-state .multiselect__content-wrapper{
+    display: block!important
+
+}
+
+.multiselect-close{
+    position: absolute;
+    right: -20px;
+    top: 20px;
+    z-index: 100;
+    font-weight: bold;
+    color: red;
+    font-size: 12px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.25), 0 1px 1px rgba(0,0,0,0.22);
+    cursor:pointer;
+}
+
+.page-link{
+    cursor: pointer;
+}
+[v-cloak] { display: none; }

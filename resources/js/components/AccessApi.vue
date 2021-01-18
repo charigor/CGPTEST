@@ -2,7 +2,7 @@
 <script>
     export default {
         mounted() {
-            console.log('Access mounted.')
+            console.log('Access mounted.');
         }
     }
 </script>

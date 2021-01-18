@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use Illuminate\Http\Request;
 use App\Models\Client;
 use Illuminate\Support\Facades\Validator;
 
 class ClientsController extends Controller
 {
+    public $pageCount = 20;
+    public $pageLink = 2;
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +17,9 @@ class ClientsController extends Controller
      */
     public function index()
     {
-        $clients = Client::paginate(20);
+        $clients = Client::with('companies')
+                           ->paginate($this->pageCount)
+                           ->onEachSide($this->pageLink);
         return view('clients',compact('clients'));
     }
 
@@ -31,21 +34,28 @@ class ClientsController extends Controller
     {
         $validation = Validator::make(request()->all(), [
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['required','email','min:6','max:255','unique:clients'],
         ]);
         if ($validation->fails()) {
             return response()->json([
                 'errors' => $validation->messages()
             ], 422);
         }
+
         $client = new Client;
         $client->name = request('name');
+        $client->email = request('email');
         $client->description = request('description');
         $client->save();
-        $clients = Client::paginate($this->pageCount);
-        return [
+
+        $clients = Client::paginate($this->pageCount)
+                         ->onEachSide($this->pageLink)
+                         ->withPath('/clients');
+
+        return response()->json([
             'message' => 'Client was created!',
             'clients' => $clients
-        ];
+        ],200);
     }
 
 
@@ -60,21 +70,23 @@ class ClientsController extends Controller
     {
         $validation = Validator::make(request()->all(), [
             'name' => ['required', 'string', 'max:255'],
+            'email' => ['required','email','min:6','max:255','unique:clients,email,'.$id],
         ]);
         if ($validation->fails()) {
             return response()->json([
                 'errors' => $validation->messages()
             ], 422);
         }
-
         $client = Client::find($id);
         $client->name = request('name');
         $client->description = request('description');
+        $client->email = request('email');
+        $client->companies()->sync(request('value'));
         $client->save();
-        return [
+        return response()->json([
             'message' => 'Client was updated!',
-            'client' => $client
-        ];
+            'client' => $client->load('companies')
+        ],200);
     }
 
     /**
@@ -85,11 +97,17 @@ class ClientsController extends Controller
      */
     public function destroy($id)
     {
-        Client::findOrFail($id)->delete();
+        $client = Client::where('id',$id)->first();
+        if($client) {
+            $client->companies()->detach();
+            $client->delete();
+        }
 
-        return [
+        return response()->json([
             'message' => 'Client was deleted!',
-            'client' => Client::paginate($this->pageCount)->withPath('/client')
-        ];
+            'clients' => Client::paginate($this->pageCount)
+                              ->onEachSide($this->pageLink)
+                              ->withPath('/clients')
+        ],200);
     }
 }
